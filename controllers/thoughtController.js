@@ -1,143 +1,153 @@
-// const { ObjectId } = require('mongoose').Types;
-// const { Student, Course } = require('../models');
+const { ObjectId } = require('mongoose').Types;
+const { Thought, User } = require('../models');
 
-// // Aggregate function to get the number of students overall
-// const headCount = async () => {
-//   const numberOfStudents = await Student.aggregate()
-//     .count('studentCount');
-//   return numberOfStudents;
-// }
+module.exports = {
+    // getAllThoughts,
+    // getThought,
+    // createThought,
+    // updateThought,
+    // deleteThought,
+    // addReaction,
+    // removeReaction,
+  
+    // Get all thoughts
+    async getAllThoughts(req, res) {
+      try {
+        const thoughtData = await Thought.find(); 
+  
+        res.json(thoughtData);
+      } catch (err) {
+        console.log(err);
+        return res.status(500).json(err);
+      }
+    },
 
-// // Aggregate function for getting the overall grade using $avg
-// const grade = async (studentId) =>
-//   Student.aggregate([
-//     // only include the given student by using $match
-//     { $match: { _id: new ObjectId(studentId) } },
-//     {
-//       $unwind: '$assignments',
-//     },
-//     {
-//       $group: {
-//         _id: new ObjectId(studentId),
-//         overallGrade: { $avg: '$assignments.score' },
-//       },
-//     },
-//   ]);
+    // Get a single thought
+    async getThought(req, res) {
+      try {
+        const thoughtData = await Thought.findOne({ _id: req.params.thoughtId })
+          .select('-__v');
+  
+        if (!thoughtData) {
+          return res.status(404).json({ message: 'No thought with that ID' })
+        }
+  
+        res.json(thoughtData);
+      } catch (err) {
+        console.log(err);
+        return res.status(500).json(err);
+      }
+    },
 
-// module.exports = {
-//   // Get all students
-//   async getStudents(req, res) {
-//     try {
-//       const students = await Student.find();
-
-//       const studentObj = {
-//         students,
-//         headCount: await headCount(),
-//       };
-
-//       res.json(studentObj);
-//     } catch (err) {
-//       console.log(err);
-//       return res.status(500).json(err);
-//     }
-//   },
-//   // Get a single student
-//   async getSingleStudent(req, res) {
-//     try {
-//       const student = await Student.findOne({ _id: req.params.studentId })
-//         .select('-__v');
-
-//       if (!student) {
-//         return res.status(404).json({ message: 'No student with that ID' })
-//       }
-
-//       res.json({
-//         student,
-//         grade: await grade(req.params.studentId),
-//       });
-//     } catch (err) {
-//       console.log(err);
-//       return res.status(500).json(err);
-//     }
-//   },
-//   // create a new student
-//   async createStudent(req, res) {
-//     try {
-//       const student = await Student.create(req.body);
-//       res.json(student);
-//     } catch (err) {
-//       res.status(500).json(err);
-//     }
-//   },
-//   // Delete a student and remove them from the course
-//   async deleteStudent(req, res) {
-//     try {
-//       const student = await Student.findOneAndRemove({ _id: req.params.studentId });
-
-//       if (!student) {
-//         return res.status(404).json({ message: 'No such student exists' });
-//       }
-
-//       const course = await Course.findOneAndUpdate(
-//         { students: req.params.studentId },
-//         { $pull: { students: req.params.studentId } },
-//         { new: true }
-//       );
-
-//       if (!course) {
-//         return res.status(404).json({
-//           message: 'Student deleted, but no courses found',
-//         });
-//       }
-
-//       res.json({ message: 'Student successfully deleted' });
-//     } catch (err) {
-//       console.log(err);
-//       res.status(500).json(err);
-//     }
-//   },
-
-//   // Add an assignment to a student
-//   async addAssignment(req, res) {
-//     console.log('You are adding an assignment');
-//     console.log(req.body);
-
-//     try {
-//       const student = await Student.findOneAndUpdate(
-//         { _id: req.params.studentId },
-//         { $addToSet: { assignments: req.body } },
-//         { runValidators: true, new: true }
-//       );
-
-//       if (!student) {
-//         return res
-//           .status(404)
-//           .json({ message: 'No student found with that ID :(' });
-//       }
-
-//       res.json(student);
-//     } catch (err) {
-//       res.status(500).json(err);
-//     }
-//   },
-//   // Remove assignment from a student
-//   async removeAssignment(req, res) {
-//     try {
-//       const student = await Student.findOneAndUpdate(
-//         { _id: req.params.studentId },
-//         { $pull: { assignment: { assignmentId: req.params.assignmentId } } },
-//         { runValidators: true, new: true }
-//       );
-
-//       if (!student) {
-//         return res
-//           .status(404)
-//           .json({ message: 'No student found with that ID :(' });
-//       }
-
-//       res.json(student);
-//     } catch (err) {
-//       res.status(500).json(err);
-//     }
-//   },
-// };
+    // create a new thought
+    async createThought(req, res) {
+      try {
+        const thoughtData = await Thought.create(req.body);
+        //res.json(thoughtData);
+        if(thoughtData) {
+          await User.findOneAndUpdate(
+            { _id: req.params.userId },
+            { $push: {thoughts: thoughtData._id} },
+            { new: true }
+          );
+        }
+  
+  
+      } catch (err) {
+        res.status(500).json(err);
+      }
+    },
+  
+    //update Thought
+    async updateThought(req, res) {
+      console.log("Update user");
+      try {
+        const thoughtData = await Thought.findOneAndUpdate(
+          { _id: req.params.thoughtId },
+          { $set: req.body },
+          { runValidators: true, new: true }
+        );
+  
+        if (!thoughtData) {
+          res.status(404).json({ message: 'No user with this id!' });
+        }
+  
+        res.json(thoughtData);
+      } catch (err) {
+        res.status(500).json(err);
+      }
+    },
+  
+    // Delete a thought and remove them from the user
+    async deleteThought(req, res) {
+      try {
+        const thoughtData = await Thought.findOneAndRemove({ _id: req.params.thoughtId });
+  
+        if (!thoughtData) {
+          return res.status(404).json({ message: 'No such thought exists' });
+        }
+  
+        const userData = await User.findOneAndUpdate(
+          { thoughts: req.params.thoughtId },
+          { $pull: { thoughts: req.params.thoughtId } },
+          { new: true }
+        );
+  
+        if (!userData) {
+          return res.status(404).json({
+            message: 'Thought deleted, but no user found',
+          });
+        }
+  
+        res.json({ message: 'Thought successfully deleted' });
+      } catch (err) {
+        console.log(err);
+        res.status(500).json(err);
+      }
+    },
+  
+    // Add a Reaction
+    async addReaction(req, res) {
+      console.log('You are adding a reaction');
+      console.log(req.body);
+  
+      try {
+        const thoughtData = await Thought.findOneAndUpdate(
+          { _id: req.params.thoughtId },
+          { $addToSet: { reactions: req.body } },
+          { runValidators: true, new: true }
+        );
+  
+        if (!thoughtData) {
+          return res
+            .status(404)
+            .json({ message: 'No thought found with that ID :(' });
+        }
+  
+        res.json(thoughtData);
+      } catch (err) {
+        res.status(500).json(err);
+      }
+    },
+    
+    // Remove Reaction
+    async removeReaction(req, res) {
+      try {
+        const thoughtData = await Thought.findOneAndUpdate(
+          { _id: req.params.thoughtId },
+          { $pull: { reactions: { reactionId: req.params.reactionId } } },
+          { runValidators: true, new: true }
+        );
+  
+        if (!thoughtData) {
+          return res
+            .status(404)
+            .json({ message: 'No thought found with that ID :(' });
+        }
+  
+        res.json(thoughtData);
+      } catch (err) {
+        res.status(500).json(err);
+      }
+    },
+  };
