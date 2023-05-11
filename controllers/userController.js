@@ -85,5 +85,48 @@ module.exports = {
     }
   },
 
-  
+  // add friend
+  async addFriend(req, res) {
+    console.log('You are adding a friend');
+    console.log(req.body);
+
+    try {
+      const userData = await User.findOneAndUpdate(
+        { _id: req.params.userId },
+        { $addToSet: { friends: req.params.friendId } },
+        { new: true }
+      );
+
+      if (!userData) {
+        return res
+          .status(404)
+          .json({ message: 'No user found with that ID :(' });
+      }
+
+      res.json(userData);
+    } catch (err) {
+      res.status(500).json(err);
+    }
+  },
+
+  // remove friend
+  async removeFriend(req, res) {
+    try {
+      const userData = await User.findOneAndUpdate(
+        { _id: req.params.userId },
+        { $pull: { friends: req.params.friendId } },
+        { new: true }
+      );
+
+      if (!userData) {
+        return res
+          .status(404)
+          .json({ message: 'No user found with that ID :(' });
+      }
+
+      res.json(userData);
+    } catch (err) {
+      res.status(500).json(err);
+    }
+  },
 };
