@@ -18,8 +18,15 @@ THEN I am able to successfully create, update, and delete users and thoughts in 
 WHEN I test API POST and DELETE routes in Insomnia
 THEN I am able to successfully create and delete reactions to thoughts and add and remove friends to a user’s friend list
 
+## Instructions
+
+* Open integrated terminal" by right clicking on the server.js file
+* type "npm i" to install dependencies
+* type "npm start" to start the server
+* remainder of steps should be done on Insomnia
+
 ## Walkthrough Video
 
-### Note
+#### Note:
 
-Used code from mini project week 18 as a starting point for this assignment.
+** Used code from mini project week 18 as a starting point for this assignment. **
