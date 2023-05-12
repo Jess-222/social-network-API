@@ -20,12 +20,14 @@ THEN I am able to successfully create and delete reactions to thoughts and add a
 
 ## Instructions
 
-* Open integrated terminal" by right clicking on the server.js file
-* type "npm i" to install dependencies
-* type "npm start" to start the server
+* Open integrated terminal" by right clicking on the index.js file on root folder.
+* type ```npm i``` to install dependencies
+* type ```node index.js"```to start the server
 * remainder of steps should be done on Insomnia
 
 ## Walkthrough Video
+
+[Link to insomnia walkthrough video](https://drive.google.com/file/d/1xrKv85sJdwSIkHLZjmZgi5XbcB73QwhG/view)
 
 #### Note:
 
